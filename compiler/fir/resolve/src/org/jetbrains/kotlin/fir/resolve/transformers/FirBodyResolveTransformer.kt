@@ -960,7 +960,7 @@ private fun inferenceComponents(session: FirSession, returnTypeCalculator: Retur
     InferenceComponents(object : ConeInferenceContext, TypeSystemInferenceExtensionContextDelegate, DataFlowInferenceContext {
         override fun findCommonIntegerLiteralTypesSuperType(explicitSupertypes: List<SimpleTypeMarker>): SimpleTypeMarker? {
             // TODO: implement
-            return null
+            return explicitSupertypes.firstOrNull()
         }
 
         override fun TypeConstructorMarker.getApproximatedIntegerLiteralType(): KotlinTypeMarker {
