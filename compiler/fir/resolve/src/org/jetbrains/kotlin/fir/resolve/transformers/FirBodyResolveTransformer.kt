@@ -531,18 +531,21 @@ open class FirBodyResolveTransformer(
                 return@with whenExpression.compose()
             }
             whenExpression.transformBranches(this, null)
-
-            @Suppress("NAME_SHADOWING")
-            val whenExpression = syntheticCallGenerator.generateCalleeForWhenExpression(whenExpression) ?: run {
-                dataFlowAnalyzer.exitWhenExpression(whenExpression)
-                whenExpression.resultType = FirErrorTypeRefImpl(null, "")
-                return@with whenExpression.compose()
-            }
-
-            val expectedTypeRef = data as FirTypeRef?
-            val result = callCompleter.completeCall(whenExpression, expectedTypeRef)
-            dataFlowAnalyzer.exitWhenExpression(result)
-            result.compose()
+            val commonType = (inferenceComponents.ctx as DataFlowInferenceContext).commonSuperTypeOrNull(whenExpression.branches.map { it.result.typeRef.coneTypeUnsafe() })!!
+            whenExpression.resultType = whenExpression.resultType.resolvedTypeFromPrototype(commonType)
+            dataFlowAnalyzer.exitWhenExpression(whenExpression)
+            whenExpression.compose()
+//            @Suppress("NAME_SHADOWING")
+//            val whenExpression = syntheticCallGenerator.generateCalleeForWhenExpression(whenExpression) ?: run {
+//                dataFlowAnalyzer.exitWhenExpression(whenExpression)
+//                whenExpression.resultType = FirErrorTypeRefImpl(null, "")
+//                return@with whenExpression.compose()
+//            }
+//
+//            val expectedTypeRef = data as FirTypeRef?
+//            val result = callCompleter.completeCall(whenExpression, expectedTypeRef)
+//            dataFlowAnalyzer.exitWhenExpression(result)
+//            result.compose()
         }
     }
 
