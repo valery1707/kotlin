@@ -19,6 +19,7 @@ package org.jetbrains.kotlin.javac.wrappers.symbols
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.CommonClassNames
 import com.intellij.psi.search.SearchScope
+import org.jetbrains.kotlin.descriptors.Visibilities
 import org.jetbrains.kotlin.descriptors.Visibility
 import org.jetbrains.kotlin.javac.JavaClassWithClassId
 import org.jetbrains.kotlin.javac.JavacWrapper
@@ -106,9 +107,9 @@ class SymbolBasedClass(
         get() = null
 
     override val methods: Collection<JavaMethod>
-        get() = enclosedElements
-                .filter { it.kind == ElementKind.METHOD && !isEnumValuesOrValueOf(it as ExecutableElement) }
-                .map { SymbolBasedMethod(it as ExecutableElement, this, javac) }
+        get() = enclosedElements.filter {
+                    it.kind == ElementKind.METHOD && !isEnumValuesOrValueOf(it as ExecutableElement) && it.getVisibility() != Visibilities.PRIVATE
+                }.map { SymbolBasedMethod(it as ExecutableElement, this, javac) }
 
     private fun isEnumValuesOrValueOf(method: ExecutableElement): Boolean {
         return isEnum && when (method.simpleName.toString()) {
@@ -119,14 +120,14 @@ class SymbolBasedClass(
     }
 
     override val fields: Collection<JavaField>
-        get() = enclosedElements
-                .filter { it.kind.isField && Name.isValidIdentifier(it.simpleName.toString()) }
-                .map { SymbolBasedField(it as VariableElement, this, javac) }
+        get() = enclosedElements.filter {
+            it.kind.isField && Name.isValidIdentifier(it.simpleName.toString()) && it.getVisibility() != Visibilities.PRIVATE
+        }.map { SymbolBasedField(it as VariableElement, this, javac) }
 
     override val constructors: Collection<JavaConstructor>
-        get() = enclosedElements
-                .filter { it.kind == ElementKind.CONSTRUCTOR }
-                .map { SymbolBasedConstructor(it as ExecutableElement, this, javac) }
+        get() = enclosedElements.filter {
+            it.kind == ElementKind.CONSTRUCTOR && it.getVisibility() != Visibilities.PRIVATE
+        }.map { SymbolBasedConstructor(it as ExecutableElement, this, javac) }
 
     override val innerClassNames: Collection<Name>
         get() = innerClasses.keys
