@@ -23,6 +23,7 @@ import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity.ERROR
 import org.jetbrains.kotlin.cli.jvm.compiler.JvmPackagePartProvider
 import org.jetbrains.kotlin.cli.jvm.config.jvmClasspathRoots
+import org.jetbrains.kotlin.cli.jvm.config.jvmModularRoots
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.config.JVMConfigurationKeys
 import org.jetbrains.kotlin.javac.JavacWrapper
@@ -56,12 +57,13 @@ object JavacWrapperRegistrar {
         JavacLogger.preRegister(context, messageCollector)
 
         val jvmClasspathRoots = configuration.jvmClasspathRoots
+        val jvmModularRoots = configuration.jvmModularRoots
         val outputDirectory = configuration.get(JVMConfigurationKeys.OUTPUT_DIRECTORY)
         val compileJava = configuration.getBoolean(JVMConfigurationKeys.COMPILE_JAVA)
         val kotlinSupertypesResolver = JavacWrapperKotlinResolverImpl(lightClassGenerationSupport)
 
         val javacWrapper = JavacWrapper(
-            javaFiles, kotlinFiles, arguments, jvmClasspathRoots, bootClasspath, sourcePath,
+            javaFiles, kotlinFiles, arguments, jvmClasspathRoots, jvmModularRoots, bootClasspath, sourcePath,
             kotlinSupertypesResolver, packagePartsProviders, compileJava, outputDirectory, context
         )
 

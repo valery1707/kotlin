@@ -62,6 +62,7 @@ class JavacWrapper(
     kotlinFiles: Collection<KtFile>,
     arguments: Array<String>?,
     jvmClasspathRoots: List<File>,
+    jvmModularRoots: List<File>,
     bootClasspath: List<File>?,
     sourcePath: List<File>?,
     val kotlinResolver: JavacWrapperKotlinResolver,
@@ -131,6 +132,7 @@ class JavacWrapper(
             LOG.info("Class path is $cp")
         } ?: run {
             fileManager.setLocation(CLASS_PATH, jvmClasspathRoots)
+            LOG.info("Modular class path is $jvmModularRoots")
             LOG.info("Class path (no boot) is $jvmClasspathRoots")
             LOG.info("Platform class path (no boot) is ${fileManager.getLocation(PLATFORM_CLASS_PATH)}")
         }
