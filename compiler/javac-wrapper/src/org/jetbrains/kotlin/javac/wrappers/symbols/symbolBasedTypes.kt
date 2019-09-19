@@ -106,6 +106,7 @@ class SymbolBasedClassifierType<out T : TypeMirror>(
     override val isRaw: Boolean
         get() = when {
             typeMirror !is DeclaredType -> false
+            classifier == null -> false
             (classifier as? JavaClass)?.typeParameters?.isEmpty() == true -> false
             else -> typeMirror.typeArguments.isEmpty() || (classifier as? JavaClass)?.typeParameters?.size != typeMirror.typeArguments.size
         }
