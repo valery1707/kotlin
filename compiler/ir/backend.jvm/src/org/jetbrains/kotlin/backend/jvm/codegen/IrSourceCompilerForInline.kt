@@ -72,7 +72,7 @@ class IrSourceCompilerForInline(
 
     private fun makeInlineNode(function: IrFunction, classCodegen: ClassCodegen, marker: CallSiteMarker?): SMAPAndMethodNode {
         var node: MethodNode? = null
-        val functionCodegen = object : FunctionCodegen(function, classCodegen, isInlineLambda = marker == null) {
+        val functionCodegen = object : FunctionCodegen(function, classCodegen, codegen.takeIf { marker == null }) {
             override fun createMethod(flags: Int, signature: JvmMethodGenericSignature): MethodVisitor {
                 val asmMethod = signature.asmMethod
                 node = MethodNode(Opcodes.API_VERSION, flags, asmMethod.name, asmMethod.descriptor, signature.genericsSignature, null)
@@ -131,7 +131,7 @@ class IrSourceCompilerForInline(
     override fun createCodegenForExternalFinallyBlockGenerationOnNonLocalReturn(finallyNode: MethodNode, curFinallyDepth: Int) =
         ExpressionCodegen(
             codegen.irFunction, codegen.signature, codegen.frameMap, InstructionAdapter(finallyNode), codegen.classCodegen,
-            codegen.isInlineLambda
+            codegen.inlinedInto
         ).also {
             it.finallyDepth = curFinallyDepth
         }
