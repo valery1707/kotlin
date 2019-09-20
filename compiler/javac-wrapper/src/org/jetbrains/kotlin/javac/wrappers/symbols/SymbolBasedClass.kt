@@ -103,13 +103,13 @@ class SymbolBasedClass(
             }
 
     override val isInterface: Boolean
-        get() = element.kind == ElementKind.INTERFACE
+        get() = isFake || element.kind == ElementKind.INTERFACE
 
     override val isAnnotationType: Boolean
-        get() = element.kind == ElementKind.ANNOTATION_TYPE
+        get() = !isFake && element.kind == ElementKind.ANNOTATION_TYPE
 
     override val isEnum: Boolean
-        get() = element.kind == ElementKind.ENUM
+        get() = !isFake && element.kind == ElementKind.ENUM
 
     override val lightClassOriginKind: LightClassOriginKind?
         get() = null
