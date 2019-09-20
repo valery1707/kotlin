@@ -19,6 +19,7 @@ package org.jetbrains.kotlin.javac.wrappers.symbols
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.CommonClassNames
 import com.intellij.psi.search.SearchScope
+import org.jetbrains.kotlin.descriptors.Visibilities
 import org.jetbrains.kotlin.descriptors.Visibility
 import org.jetbrains.kotlin.javac.JavaClassWithClassId
 import org.jetbrains.kotlin.javac.JavacWrapper
@@ -47,16 +48,16 @@ class SymbolBasedClass(
         get() = Name.identifier(element.simpleName.toString())
 
     override val isAbstract: Boolean
-        get() = element.isAbstract
+        get() = isFake || element.isAbstract
 
     override val isStatic: Boolean
-        get() = element.isStatic
+        get() = !isFake && element.isStatic
 
     override val isFinal: Boolean
-        get() = element.isFinal
+        get() = !isFake && element.isFinal
 
     override val visibility: Visibility
-        get() = element.getVisibility()
+        get() = if (isFake) Visibilities.PUBLIC else element.getVisibility()
 
     override val typeParameters: List<JavaTypeParameter>
             by lazy { if (isFake) emptyList() else element.typeParameters.map { SymbolBasedTypeParameter(it, javac) } }
