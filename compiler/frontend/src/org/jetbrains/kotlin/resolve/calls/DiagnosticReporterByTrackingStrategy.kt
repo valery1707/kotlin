@@ -19,6 +19,7 @@ import org.jetbrains.kotlin.psi.psiUtil.isNull
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.calls.callUtil.getResolvedCall
 import org.jetbrains.kotlin.resolve.calls.callUtil.isTrailingLambdaOnNewLIne
+import org.jetbrains.kotlin.resolve.calls.callUtil.reportTrailingLambdaErrorOr
 import org.jetbrains.kotlin.resolve.calls.context.BasicCallResolutionContext
 import org.jetbrains.kotlin.resolve.calls.inference.model.*
 import org.jetbrains.kotlin.resolve.calls.model.*
@@ -119,16 +120,15 @@ class DiagnosticReporterByTrackingStrategy(
             SmartCastDiagnostic::class.java -> reportSmartCast(diagnostic as SmartCastDiagnostic)
             UnstableSmartCast::class.java -> reportUnstableSmartCast(diagnostic as UnstableSmartCast)
             TooManyArguments::class.java -> {
-                reportTrailingLambdaOnNewLineErrorOrElse(callArgument.psiExpression) {
-                    trace.report(TOO_MANY_ARGUMENTS.on(it, (diagnostic as TooManyArguments).descriptor))
+                trace.reportTrailingLambdaErrorOr(callArgument.psiExpression) { expr ->
+                    TOO_MANY_ARGUMENTS.on(expr, (diagnostic as TooManyArguments).descriptor)
                 }
 
                 trace.markAsReported()
             }
-            VarargArgumentOutsideParentheses::class.java ->
-                reportTrailingLambdaOnNewLineErrorOrElse(callArgument.psiExpression) {
-                    trace.report(VARARG_OUTSIDE_PARENTHESES.on(it))
-                }
+            VarargArgumentOutsideParentheses::class.java -> trace.reportTrailingLambdaErrorOr(callArgument.psiExpression) { expr ->
+                VARARG_OUTSIDE_PARENTHESES.on(expr)
+            }
 
             MixingNamedAndPositionArguments::class.java ->
                 trace.report(MIXING_NAMED_AND_POSITIONED_ARGUMENTS.on(callArgument.psiCallArgument.valueArgument.asElement()))
@@ -171,17 +171,6 @@ class DiagnosticReporterByTrackingStrategy(
 
     private fun <T> reportIfNonNull(element: T?, report: (T) -> Unit) {
         if (element != null) report(element)
-    }
-
-    private inline fun reportTrailingLambdaOnNewLineErrorOrElse(
-        expression: KtExpression?,
-        crossinline report: (KtExpression) -> Unit
-    ) = reportIfNonNull(expression) { expr ->
-        if (expr.isTrailingLambdaOnNewLIne) {
-            trace.report(UNEXPECTED_TRAILING_LAMBDA_ON_A_NEW_LINE.on(expr as KtLambdaExpression))
-        } else {
-            report(expr)
-        }
     }
 
     override fun onCallArgumentName(callArgument: KotlinCallArgument, diagnostic: KotlinCallDiagnostic) {
