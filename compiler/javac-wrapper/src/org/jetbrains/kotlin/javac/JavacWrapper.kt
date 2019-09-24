@@ -330,9 +330,9 @@ class JavacWrapper(
 
     private fun JavacFileManager.setClassPathForCompilation(outDir: File?) = apply {
         (outDir ?: outputDirectory)?.let { outputDir ->
-            if (outputDir.exists()) {
-                fileManager.setLocation(CLASS_PATH, fileManager.getLocation(CLASS_PATH) + outputDir)
-            }
+//            if (outputDir.exists()) {
+//                fileManager.setLocation(CLASS_PATH, fileManager.getLocation(CLASS_PATH) + outputDir)
+//            }
             outputDir.mkdirs()
             fileManager.setLocation(CLASS_OUTPUT, listOf(outputDir))
 
