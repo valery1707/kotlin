@@ -279,26 +279,26 @@ public class ValueArgumentsToParametersMapper {
             KtExpression possiblyLabeledFunctionLiteral = lambdaArgument.getArgumentExpression();
 
             if (parameters.isEmpty()) {
-                CallUtilKt.reportTrailingLambdaErrorOr(candidateCall.getTrace(), possiblyLabeledFunctionLiteral, expression -> {
-                    report(TOO_MANY_ARGUMENTS.on(expression, candidateCall.getCandidateDescriptor()));
-                    return Unit.INSTANCE;
-                });
+                CallUtilKt.reportTrailingLambdaErrorOr(
+                        candidateCall.getTrace(), possiblyLabeledFunctionLiteral,
+                        expression -> TOO_MANY_ARGUMENTS.on(expression, candidateCall.getCandidateDescriptor())
+                );
                 setStatus(ERROR);
             }
             else {
                 ValueParameterDescriptor lastParameter = CollectionsKt.last(parameters);
                 if (lastParameter.getVarargElementType() != null) {
-                    CallUtilKt.reportTrailingLambdaErrorOr(candidateCall.getTrace(), possiblyLabeledFunctionLiteral, expression -> {
-                        report(VARARG_OUTSIDE_PARENTHESES.on(expression));
-                        return Unit.INSTANCE;
-                    });
+                    CallUtilKt.reportTrailingLambdaErrorOr(
+                            candidateCall.getTrace(), possiblyLabeledFunctionLiteral,
+                            expression -> VARARG_OUTSIDE_PARENTHESES.on(expression)
+                    );
                     setStatus(ERROR);
                 }
                 else if (!usedParameters.add(lastParameter)) {
-                    CallUtilKt.reportTrailingLambdaErrorOr(candidateCall.getTrace(), possiblyLabeledFunctionLiteral, expr -> {
-                        report(TOO_MANY_ARGUMENTS.on(expr, candidateCall.getCandidateDescriptor()));
-                        return Unit.INSTANCE;
-                    });
+                    CallUtilKt.reportTrailingLambdaErrorOr(
+                            candidateCall.getTrace(), possiblyLabeledFunctionLiteral,
+                            expr -> TOO_MANY_ARGUMENTS.on(expr, candidateCall.getCandidateDescriptor())
+                    );
                     setStatus(WEAK_ERROR);
                 }
                 else {

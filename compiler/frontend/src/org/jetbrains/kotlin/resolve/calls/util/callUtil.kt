@@ -302,13 +302,13 @@ val KtLambdaExpression.isTrailingLambdaOnNewLIne
 
 inline fun BindingTrace.reportTrailingLambdaErrorOr(
     expression: KtExpression?,
-    originalReporter: (KtExpression) -> Unit
+    originalDiagnostic: (KtExpression) -> Diagnostic
 ) {
     expression?.let { expr ->
         if (expr is KtLambdaExpression && expr.isTrailingLambdaOnNewLIne) {
             report(Errors.UNEXPECTED_TRAILING_LAMBDA_ON_A_NEW_LINE.on(expr))
         } else {
-            originalReporter(expr)
+            report(originalDiagnostic(expr))
         }
     }
 }
