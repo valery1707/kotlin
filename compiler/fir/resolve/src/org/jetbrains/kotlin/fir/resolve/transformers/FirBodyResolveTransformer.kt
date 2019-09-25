@@ -694,7 +694,7 @@ open class FirBodyResolveTransformer(
         }
         val receiverTypeRef = owner.receiverTypeRef
         if (receiverTypeRef != null) {
-            withLabelAndReceiverType(owner.name, accessor, receiverTypeRef.coneTypeUnsafe()) {
+            withLabelAndReceiverType(owner.name, owner, receiverTypeRef.coneTypeUnsafe()) {
                 transformFunctionWithGivenSignature(accessor, expectedReturnTypeRef, receiverTypeRef)
             }
         } else {
@@ -916,6 +916,9 @@ open class FirBodyResolveTransformer(
                 ImplicitDispatchReceiverValue(owner.symbol, type, symbolProvider, session, scopeSession)
             }
             is FirFunction<*> -> {
+                ImplicitExtensionReceiverValue(owner.symbol, type, session, scopeSession)
+            }
+            is FirVariable<*> -> {
                 ImplicitExtensionReceiverValue(owner.symbol, type, session, scopeSession)
             }
             else -> {

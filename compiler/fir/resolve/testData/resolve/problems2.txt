@@ -74,5 +74,5 @@ FILE: problems2.kt
     }
     public final val R|KonanTarget|.presetName: R|kotlin/String|
         public get(): R|kotlin/String| {
-            ^ this@R|special/accessor|.R|/KonanTarget.name|
+            ^ this@R|/presetName|.R|/KonanTarget.name|
         }
