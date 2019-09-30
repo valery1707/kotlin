@@ -511,8 +511,7 @@ class KotlinCoreEnvironment private constructor(
         private fun createApplicationEnvironment(
             parentDisposable: Disposable, configuration: CompilerConfiguration, unitTestMode: Boolean
         ): JavaCoreApplicationEnvironment {
-            // FIXME: no such method in 193 platform
-            // Extensions.cleanRootArea(parentDisposable)
+            Extensions.cleanRootArea(parentDisposable)
             registerAppExtensionPoints()
             val applicationEnvironment = object : JavaCoreApplicationEnvironment(parentDisposable, unitTestMode) {
                 override fun createJrtFileSystem(): VirtualFileSystem? = CoreJrtFileSystem()
