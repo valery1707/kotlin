@@ -224,6 +224,11 @@ public class PerformanceBasicCompletionHandlerTestGenerated extends AbstractPerf
         runTest("idea/idea-completion/testData/handlers/basic/SyntheticExtension.kt");
     }
 
+    @TestMetadata("TopLevelFunctionImportWithLotsOfFqName.kt")
+    public void testTopLevelFunctionImportWithLotsOfFqName() throws Exception {
+        runTest("idea/idea-completion/testData/handlers/basic/TopLevelFunctionImportWithLotsOfFqName.kt");
+    }
+
     @TestMetadata("TypeInferedFromWrapperType.kt")
     public void testTypeInferedFromWrapperType() throws Exception {
         runTest("idea/idea-completion/testData/handlers/basic/TypeInferedFromWrapperType.kt");
