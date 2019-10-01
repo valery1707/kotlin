@@ -60,8 +60,8 @@ private class JvmOverloadsAnnotationLowering(val context: JvmBackendContext) : C
             IrDelegatingConstructorCallImpl(UNDEFINED_OFFSET, UNDEFINED_OFFSET, context.irBuiltIns.unitType, target.symbol, target.descriptor)
         else
             IrCallImpl(UNDEFINED_OFFSET, UNDEFINED_OFFSET, target.returnType, target.symbol)
-        for (arg in target.typeParameters) {
-            call.putTypeArgument(arg.index, wrapperIrFunction.typeParameters[arg.index].defaultType)
+        for (arg in wrapperIrFunction.typeParameters) {
+            call.putTypeArgument(arg.index, arg.defaultType)
         }
         call.dispatchReceiver = wrapperIrFunction.dispatchReceiverParameter?.let { dispatchReceiver ->
             IrGetValueImpl(
