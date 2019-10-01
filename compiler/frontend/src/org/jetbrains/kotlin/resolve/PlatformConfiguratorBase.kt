@@ -7,6 +7,7 @@ package org.jetbrains.kotlin.resolve
 
 import org.jetbrains.kotlin.builtins.PlatformToKotlinClassMap
 import org.jetbrains.kotlin.container.*
+import org.jetbrains.kotlin.platform.DiagnosticComponents
 import org.jetbrains.kotlin.resolve.calls.checkers.*
 import org.jetbrains.kotlin.resolve.calls.results.TypeSpecificityComparator
 import org.jetbrains.kotlin.resolve.checkers.*
@@ -89,7 +90,8 @@ abstract class PlatformConfiguratorBase(
     private val platformToKotlinClassMap: PlatformToKotlinClassMap? = null,
     private val delegationFilter: DelegationFilter? = null,
     private val overridesBackwardCompatibilityHelper: OverridesBackwardCompatibilityHelper? = null,
-    private val declarationReturnTypeSanitizer: DeclarationReturnTypeSanitizer? = null
+    private val declarationReturnTypeSanitizer: DeclarationReturnTypeSanitizer? = null,
+    private val diagnosticComponents: DiagnosticComponents? = null
 ) : PlatformConfigurator {
     override val platformSpecificContainer = composeContainer(this::class.java.simpleName) {
         configureDefaultCheckers()
@@ -115,6 +117,7 @@ abstract class PlatformConfiguratorBase(
             useInstanceIfNotNull(delegationFilter)
             useInstanceIfNotNull(overridesBackwardCompatibilityHelper)
             useInstanceIfNotNull(declarationReturnTypeSanitizer)
+            useInstanceIfNotNull(diagnosticComponents)
         }
     }
 }

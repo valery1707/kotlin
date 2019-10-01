@@ -29,9 +29,10 @@ import org.jetbrains.kotlin.descriptors.CallableMemberDescriptor.Kind.DELEGATION
 import org.jetbrains.kotlin.descriptors.CallableMemberDescriptor.Kind.FAKE_OVERRIDE
 import org.jetbrains.kotlin.diagnostics.DiagnosticFactory2
 import org.jetbrains.kotlin.diagnostics.DiagnosticFactoryWithPsiElement
-import org.jetbrains.kotlin.diagnostics.Errors.*
+import org.jetbrains.kotlin.diagnostics.Errors.*import org.jetbrains.kotlin.diagnostics.rendering.DeclarationWithAnnotationsWhitelist
 import org.jetbrains.kotlin.incremental.components.NoLookupLocation
 import org.jetbrains.kotlin.lexer.KtTokens
+import org.jetbrains.kotlin.platform.DiagnosticComponents
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.DescriptorUtils.classCanHaveAbstractFakeOverride
 import org.jetbrains.kotlin.resolve.OverridingUtil.OverrideCompatibilityInfo.Result.OVERRIDABLE
@@ -47,7 +48,8 @@ class OverrideResolver(
     private val trace: BindingTrace,
     private val overridesBackwardCompatibilityHelper: OverridesBackwardCompatibilityHelper,
     private val languageVersionSettings: LanguageVersionSettings,
-    private val kotlinTypeRefiner: KotlinTypeRefiner
+    private val kotlinTypeRefiner: KotlinTypeRefiner,
+    private val diagnosticComponents: DiagnosticComponents
 ) {
 
     fun check(c: TopDownAnalysisContext) {
@@ -289,7 +291,9 @@ class OverrideResolver(
                 override fun returnTypeMismatchOnOverride(overriding: CallableMemberDescriptor, overridden: CallableMemberDescriptor) {
                     if (!typeMismatchError) {
                         typeMismatchError = true
-                        trace.report(RETURN_TYPE_MISMATCH_ON_OVERRIDE.on(member, declared, overridden))
+                        trace.report(RETURN_TYPE_MISMATCH_ON_OVERRIDE.on(
+                            member, declared, DeclarationWithAnnotationsWhitelist(overridden, diagnosticComponents.nullabilityAnnotations)
+                        ))
                     }
                 }
 

@@ -88,7 +88,9 @@ object JvmPlatformConfigurator : PlatformConfiguratorBase(
 
     overridesBackwardCompatibilityHelper = JvmOverridesBackwardCompatibilityHelper,
 
-    declarationReturnTypeSanitizer = JvmDeclarationReturnTypeSanitizer
+    declarationReturnTypeSanitizer = JvmDeclarationReturnTypeSanitizer,
+
+    diagnosticComponents = JvmDiagnosticComponents
 ) {
     override fun configureModuleComponents(container: StorageComponentContainer) {
         container.useImpl<JvmStaticChecker>()

@@ -763,7 +763,7 @@ public class DefaultErrorMessages {
         MAP.put(CANNOT_CHANGE_ACCESS_PRIVILEGE, "Cannot change access privilege ''{0}'' for ''{1}'' in ''{2}''", VISIBILITY, NAME, NAME);
 
         MAP.put(RETURN_TYPE_MISMATCH_ON_OVERRIDE, "Return type of ''{0}'' is not a subtype of the return type of the overridden member ''{1}''",
-                NAME, FQ_NAMES_IN_TYPES);
+                NAME, FQ_NAMES_IN_TYPES_ANNOTATIONS_WHITELIST);
         MAP.put(RETURN_TYPE_MISMATCH_ON_INHERITANCE, "''{0}'' clashes with ''{1}'': return types are incompatible",
                 SHORT_NAMES_IN_TYPES, SHORT_NAMES_IN_TYPES);
 
