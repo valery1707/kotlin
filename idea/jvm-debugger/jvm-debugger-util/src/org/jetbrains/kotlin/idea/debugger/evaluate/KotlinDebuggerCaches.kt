@@ -92,7 +92,7 @@ class KotlinDebuggerCaches(project: Project) {
         private val LOG = Logger.getLogger(KotlinDebuggerCaches::class.java)!!
 
         @get:TestOnly
-        var LOG_COMPILATIONS: Boolean = true
+        var LOG_COMPILATIONS: Boolean = false
 
         fun getInstance(project: Project) = ServiceManager.getService(project, KotlinDebuggerCaches::class.java)!!
 

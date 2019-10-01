@@ -39,6 +39,7 @@ abstract class KotlinTraceTestCase : KotlinDescriptorTestCaseWithStepping() {
     abstract val librarySupportProvider: LibrarySupportProvider
 
     override fun doMultiFileTest(files: TestFiles, preferences: DebuggerPreferences) {
+        // Sequence expressions are verbose. Disable expression logging for sequence debugger
         KotlinDebuggerCaches.LOG_COMPILATIONS = false
 
         val session = debuggerSession.xDebugSession ?: kotlin.test.fail("XDebugSession is null")

@@ -22,6 +22,7 @@ import com.intellij.xdebugger.XDebugSession
 import org.jetbrains.kotlin.codegen.CodegenTestCase.TestFile
 import org.jetbrains.kotlin.codegen.forTestCompile.ForTestCompileRuntime
 import org.jetbrains.kotlin.config.JvmTarget
+import org.jetbrains.kotlin.idea.debugger.evaluate.KotlinDebuggerCaches
 import org.jetbrains.kotlin.idea.debugger.test.preference.*
 import org.jetbrains.kotlin.idea.debugger.test.util.BreakpointCreator
 import org.jetbrains.kotlin.idea.debugger.test.util.KotlinOutputChecker
@@ -71,10 +72,13 @@ abstract class KotlinDescriptorTestCase : DescriptorTestCase() {
     override fun setUp() {
         super.setUp()
 
+        KotlinDebuggerCaches.LOG_COMPILATIONS = true
         logPropagator = LogPropagator(::systemLogger).apply { attach() }
     }
 
     override fun tearDown() {
+        KotlinDebuggerCaches.LOG_COMPILATIONS = false
+
         oldValues?.revertValues()
         oldValues = null
 
