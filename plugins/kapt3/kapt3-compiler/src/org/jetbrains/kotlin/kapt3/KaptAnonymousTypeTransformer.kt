@@ -16,10 +16,15 @@ import org.jetbrains.kotlin.types.TypeProjectionImpl
 import org.jetbrains.kotlin.types.replace
 import org.jetbrains.kotlin.types.typeUtil.builtIns
 
-class KaptAnonymousTypeTransformer : DeclarationSignatureAnonymousTypeTransformer {
+class KaptAnonymousTypeTransformer(private val analysisExtension: AbstractKapt3Extension) : DeclarationSignatureAnonymousTypeTransformer {
     override fun transformAnonymousType(descriptor: DeclarationDescriptorWithVisibility, type: KotlinType): KotlinType? {
-        if (isLocal(descriptor))
+        if (!analysisExtension.analyzePartially) {
+            return null
+        }
+
+        if (isLocal(descriptor)) {
             return type
+        }
 
         return convertPossiblyAnonymousType(type)
     }
