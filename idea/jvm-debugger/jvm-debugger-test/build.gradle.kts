@@ -18,8 +18,13 @@ dependencies {
 
     testCompile(intellijPluginDep("stream-debugger"))
 
+    Platform[191].orLower {
+        testCompileOnly(intellijDep()) { includeJars("java-api", "java-impl") }
+    }
+
     Platform[192].orHigher {
-        testCompileOnly(intellijPluginDep("java"))
+        testCompileOnly(intellijPluginDep("java")) { includeJars("java-api", "java-impl") }
+        testRuntime(intellijPluginDep("java"))
     }
 
     testRuntime(project(":nj2k:nj2k-services")) { isTransitive = false }
@@ -43,6 +48,11 @@ dependencies {
 sourceSets {
     "main" { none() }
     "test" { projectDefault() }
+}
+
+projectTest(parallel = true) {
+    dependsOn(":dist")
+    workingDir = rootDir
 }
 
 testsJar()
