@@ -10,6 +10,7 @@ import com.intellij.openapi.module.Module
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.JavaDirectoryService
+import com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.descriptors.annotations.AnnotationDescriptor
 import org.jetbrains.kotlin.descriptors.annotations.Annotations
@@ -32,6 +33,7 @@ import org.jetbrains.kotlin.idea.refactoring.fqName.fqName
 import org.jetbrains.kotlin.idea.refactoring.introduce.showErrorHint
 import org.jetbrains.kotlin.idea.util.*
 import org.jetbrains.kotlin.idea.util.application.runWriteAction
+import org.jetbrains.kotlin.lexer.KtModifierKeywordToken
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.psi.*
@@ -383,11 +385,8 @@ fun KtNamedDeclaration.isAlwaysActual(): Boolean = safeAs<KtParameter>()?.parent
     ?.mustHaveValOrVar() ?: false
 
 
-fun TypeAccessibilityChecker.isCorrectAndHaveNonPrivateModifier(declaration: KtNamedDeclaration, showErrorHint: Boolean = false): Boolean {
-    if (declaration.hasPrivateModifier()) {
-        if (showErrorHint) showInaccessibleDeclarationError(declaration, "The declaration has a private modifier")
-        return false
-    }
+fun TypeAccessibilityChecker.isCorrectAndHaveAccessibleModifiers(declaration: KtNamedDeclaration, showErrorHint: Boolean = false): Boolean {
+    if (declaration.anyInaccessibleModifier(INACCESSIBLE_MODIFIERS, showErrorHint)) return false
 
     if (!showErrorHint) return checkAccessibility(declaration)
 
@@ -402,7 +401,19 @@ fun TypeAccessibilityChecker.isCorrectAndHaveNonPrivateModifier(declaration: KtN
     return false
 }
 
-fun showInaccessibleDeclarationError(element: KtNamedDeclaration, message: String, editor: Editor? = element.findExistingEditor()) {
+private val INACCESSIBLE_MODIFIERS = listOf(KtTokens.PRIVATE_KEYWORD, KtTokens.CONST_KEYWORD, KtTokens.LATEINIT_KEYWORD)
+
+private fun KtModifierListOwner.anyInaccessibleModifier(modifiers: Collection<KtModifierKeywordToken>, showErrorHint: Boolean): Boolean {
+    for (modifier in modifiers) {
+        if (hasModifier(modifier)) {
+            if (showErrorHint) showInaccessibleDeclarationError(this, "The declaration has `$modifier` modifier")
+            return true
+        }
+    }
+    return false
+}
+
+fun showInaccessibleDeclarationError(element: PsiElement, message: String, editor: Editor? = element.findExistingEditor()) {
     editor?.let {
         showErrorHint(element.project, editor, escapeXml(message), "Inaccessible declaration")
     }
@@ -420,7 +431,7 @@ fun TypeAccessibilityChecker.findAndApplyExistingClasses(elements: Collection<Kt
         val existingNames = classes.mapNotNull { it.fqName?.asString() }.toHashSet()
         existingTypeNames = existingNames
 
-        val newExistingClasses = classes.filter { isCorrectAndHaveNonPrivateModifier(it) }
+        val newExistingClasses = classes.filter { isCorrectAndHaveAccessibleModifiers(it) }
         if (classes.size == newExistingClasses.size) return existingNames
 
         classes = newExistingClasses
