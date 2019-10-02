@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.backend.jvm.codegen
 
+import org.jetbrains.kotlin.backend.common.lower.parents
 import org.jetbrains.kotlin.backend.jvm.JvmBackendContext
 import org.jetbrains.kotlin.builtins.functions.FunctionClassDescriptor
 import org.jetbrains.kotlin.codegen.AsmUtil
@@ -157,7 +158,7 @@ class IrTypeMapper(private val context: JvmBackendContext) : KotlinTypeMapperBas
                 prefix + className
             }
             is IrClass -> {
-                computeInternalName(parent) + "$" + className
+                classInternalName(parent) + "$" + className
             }
             else -> error(
                 "Local class should have its name computed in InventNamesForLocalClasses: ${klass.fqNameWhenAvailable}\n" +
