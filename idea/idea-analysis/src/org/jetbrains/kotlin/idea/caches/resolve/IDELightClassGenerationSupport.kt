@@ -62,16 +62,18 @@ import java.util.concurrent.ConcurrentMap
 
 class IDELightClassGenerationSupport(private val project: Project) : LightClassGenerationSupport() {
 
-    private inner class KtUltraLightSupportImpl(private val element: KtElement, private val module: Module) : KtUltraLightSupport {
+    private inner class KtUltraLightSupportImpl(private val element: KtElement, private val module: Module?) : KtUltraLightSupport {
 
         override val isReleasedCoroutine
-            get() = module.languageVersionSettings.supportsFeature(LanguageFeature.ReleaseCoroutines)
+            get() = module?.languageVersionSettings?.supportsFeature(LanguageFeature.ReleaseCoroutines) ?: true
 
         private fun KtDeclaration.mayBeModifiedByCompilerPlugins(): Boolean {
 
-            val facet = KotlinFacet.get(module)
-            val pluginClasspaths = facet?.configuration?.settings?.compilerArguments?.pluginClasspaths
-            if (pluginClasspaths.isNullOrEmpty()) return false
+            module?.let {
+                val facet = KotlinFacet.get(it)
+                val pluginClasspaths = facet?.configuration?.settings?.compilerArguments?.pluginClasspaths
+                if (pluginClasspaths.isNullOrEmpty()) return false
+            }
 
             val resolvedDescriptor = lazy(LazyThreadSafetyMode.NONE) {
                 resolveToDescriptorIfAny(
@@ -178,7 +180,7 @@ class IDELightClassGenerationSupport(private val project: Project) : LightClassG
             return null
         }
 
-        val module = ModuleUtilCore.findModuleForPsiElement(element) ?: return null
+        val module = ModuleUtilCore.findModuleForPsiElement(element)
 
         return KtUltraLightSupportImpl(element, module).let { support ->
             when {
