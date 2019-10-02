@@ -6,23 +6,23 @@
 package org.jetbrains.kotlin.diagnostics.rendering
 
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
-import org.jetbrains.kotlin.name.FqName
+import org.jetbrains.kotlin.platform.PlatformSpecificDiagnosticComponents
 import org.jetbrains.kotlin.renderer.DescriptorRenderer
 
-data class DeclarationWithAnnotationsWhitelist(
+data class DeclarationWithDiagnosticComponents(
     val declaration: DeclarationDescriptor,
-    val annotationsWhitelist: Set<FqName>
+    val diagnosticComponents: PlatformSpecificDiagnosticComponents
 )
 
 class AnnotationsWhitelistDescriptorRenderer(
     private val baseRenderer: DescriptorRenderer,
     private val toParameterRenderer: DescriptorRenderer.() -> DiagnosticParameterRenderer<DeclarationDescriptor>
-) : DiagnosticParameterRenderer<DeclarationWithAnnotationsWhitelist> {
-    override fun render(obj: DeclarationWithAnnotationsWhitelist, renderingContext: RenderingContext): String {
-        val (descriptor, annotationsWhitelist) = obj
+) : DiagnosticParameterRenderer<DeclarationWithDiagnosticComponents> {
+    override fun render(obj: DeclarationWithDiagnosticComponents, renderingContext: RenderingContext): String {
+        val (descriptor, diagnosticComponents) = obj
         return baseRenderer.withOptions {
             annotationFilter = { annotation ->
-                annotation.fqName in annotationsWhitelist
+                diagnosticComponents.isNullabilityAnnotation(annotation, descriptor)
             }
         }.toParameterRenderer().render(descriptor, renderingContext)
     }

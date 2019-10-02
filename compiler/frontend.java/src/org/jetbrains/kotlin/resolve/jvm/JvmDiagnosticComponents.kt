@@ -5,10 +5,24 @@
 
 package org.jetbrains.kotlin.resolve.jvm
 
+import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
+import org.jetbrains.kotlin.descriptors.annotations.AnnotationDescriptor
+import org.jetbrains.kotlin.load.java.AnnotationTypeQualifierResolver
 import org.jetbrains.kotlin.load.java.NULLABILITY_ANNOTATIONS
-import org.jetbrains.kotlin.platform.DiagnosticComponents
+import org.jetbrains.kotlin.load.java.descriptors.JavaCallableMemberDescriptor
+import org.jetbrains.kotlin.platform.PlatformSpecificDiagnosticComponents
 
-object JvmDiagnosticComponents : DiagnosticComponents {
-    override val nullabilityAnnotations
-        get() = NULLABILITY_ANNOTATIONS
+class JvmDiagnosticComponents(
+    private val typeQualifierResolver: AnnotationTypeQualifierResolver
+) : PlatformSpecificDiagnosticComponents {
+    override fun isNullabilityAnnotation(
+        annotationDescriptor: AnnotationDescriptor,
+        containingDeclaration: DeclarationDescriptor
+    ): Boolean {
+        if (containingDeclaration !is JavaCallableMemberDescriptor) {
+            return false
+        }
+        return annotationDescriptor.fqName?.let { it in NULLABILITY_ANNOTATIONS } == true
+                || typeQualifierResolver.resolveTypeQualifierAnnotation(annotationDescriptor) != null
+    }
 }
